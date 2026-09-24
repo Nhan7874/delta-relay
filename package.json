@@ -1,0 +1,15 @@
+{
+  "name": "delta-defense-relay",
+  "version": "1.0.0",
+  "description": "Relay-Server für den Online-Koop von Delta Defense",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
