@@ -59,6 +59,11 @@ wss.on("connection", (ws) => {
   ws.on("pong", () => (ws.isAlive = true));
 
   ws.on("message", (data, isBinary) => {
+    // Ausdrückliches Verlassen wird immer sofort verarbeitet (schneller als das Schließen der Verbindung)
+    if (!isBinary && data.length < 32 && data.toString() === '{"t":"leave"}') {
+      leaveRoom(ws);
+      return;
+    }
     // Verbundene Spieler: alles an den Partner weiterleiten
     if (ws.peer) {
       if (ws.peer.readyState === 1) ws.peer.send(data, { binary: isBinary });
@@ -101,7 +106,7 @@ wss.on("connection", (ws) => {
   ws.on("error", () => {});
 });
 
-// Tote Verbindungen aufräumen
+// Tote Verbindungen aufräumen (alle 10 s)
 setInterval(() => {
   for (const ws of wss.clients) {
     if (!ws.isAlive) {
@@ -111,6 +116,6 @@ setInterval(() => {
     ws.isAlive = false;
     ws.ping();
   }
-}, 30000);
+}, 10000);
 
 server.listen(PORT, () => console.log(`Relay läuft auf Port ${PORT}`));
